@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  app:
+    image: python:3.12-slim
+    container_name: qsl-mailer-app
+    working_dir: /app
+    command: sh -c "pip install -r requirements.txt && python app/main.py"
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app
+      - ./uploads:/app/uploads
+      - ./generated:/app/generated
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    container_name: qsl-mailer-db
+    environment:
+      POSTGRES_DB: qslmailer
+      POSTGRES_USER: qslmailer
+      POSTGRES_PASSWORD: qslmailer
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
